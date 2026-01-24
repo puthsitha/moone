@@ -12,6 +12,7 @@ import 'package:monee/core/routes/src/app_router.dart';
 import 'package:monee/core/theme/src/dark_theme.dart';
 import 'package:monee/core/theme/src/light_theme.dart';
 import 'package:monee/l10n/l10n.dart';
+import 'package:monee/services/notification_services.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -23,6 +24,9 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await NotificationService().init();
+    });
     _initSplashScreen();
     super.initState();
   }

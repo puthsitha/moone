@@ -6,7 +6,6 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:monee/app/app.dart';
 import 'package:monee/bootstrap.dart';
-import 'package:monee/services/notification_services.dart';
 import 'package:path_provider/path_provider.dart';
 
 Future<void> main() async {
@@ -20,6 +19,5 @@ Future<void> main() async {
       (await getApplicationDocumentsDirectory()).path,
     ),
   );
-  unawaited(NotificationService().init());
   await bootstrap(() => const App());
 }
