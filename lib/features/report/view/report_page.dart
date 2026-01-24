@@ -204,7 +204,7 @@ class ReportView extends StatelessWidget {
                                   Align(
                                     child: remaining > 0
                                         ? Text(
-                                            '${(remainingLabel * 100).toStringAsFixed(0)}%',
+                                            '${remainingLabel.toStringAsFixed(0)}%',
                                           )
                                         : const Text('--'),
                                   ),
