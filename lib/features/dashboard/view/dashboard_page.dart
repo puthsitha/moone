@@ -150,123 +150,146 @@ class _DashboardViewState extends State<DashboardView>
           SliverPadding(
             padding: const EdgeInsets.all(Spacing.normal),
             sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                const SizedBox(height: Spacing.s),
+              delegate: SliverChildListDelegate(
+                [
+                  const SizedBox(height: Spacing.s),
 
-                // Records Section
-                _AnimatedDashboardCard(
-                  delay: 100,
-                  child: _DashboardSection(
-                    icon: Icons.receipt_long,
-                    title: l10n.record,
-                    description: l10n.view_all_record,
-                    color: Colors.blue,
-                    onTap: () {
-                      AppRouter.navigationBottomBarShell.goBranch(1);
-                    },
-                  ),
-                ),
-
-                const SizedBox(height: Spacing.normal),
-
-                // // Add Transaction Section
-                _AnimatedDashboardCard(
-                  delay: 200,
-                  child: _DashboardSection(
-                    icon: Icons.add_circle,
-                    title: l10n.add_tracking,
-                    description: l10n.record_new_tracking,
-                    color: Colors.green,
-                    onTap: () async {
-                      await context.pushNamed(Pages.tracking.name);
-                    },
-                  ),
-                ),
-
-                const SizedBox(height: Spacing.normal),
-
-                // // Reports Section
-                _AnimatedDashboardCard(
-                  delay: 300,
-                  child: _DashboardSection(
-                    icon: Icons.bar_chart,
-                    title: l10n.report,
-                    description: l10n.view_insights_analytics,
-                    color: Colors.purple,
-                    onTap: () {
-                      AppRouter.navigationBottomBarShell.goBranch(2);
-                    },
-                  ),
-                ),
-
-                const SizedBox(height: Spacing.l1),
-
-                // Quick Stats Section
-                _AnimatedDashboardCard(
-                  delay: 400,
-                  child: Container(
-                    padding: const EdgeInsets.all(Spacing.l),
-                    decoration: BoxDecoration(
-                      color: context.colors.pureWhite,
-                      borderRadius: kBorderRadius,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          l10n.quick_stats,
-                          style: Theme.of(context).textTheme.titleLarge
-                              ?.copyWith(
-                                fontWeight: FontWeight.bold,
-                              ),
-                        ),
-                        const SizedBox(height: Spacing.normal),
-                        BlocBuilder<TrackingBloc, TrackingState>(
-                          builder: (context, state) {
-                            final totalIncome = state.incomes.fold<double>(
-                              0,
-                              (sum, item) => sum + item.amount,
-                            );
-                            final totalExpenses = state.expenses.fold<double>(
-                              0,
-                              (sum, item) => sum + item.amount,
-                            );
-                            final balance = totalIncome - totalExpenses;
-
-                            return Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                StatItem(
-                                  label: l10n.income,
-                                  value: NumberFormat.currency(
-                                    symbol: r'$',
-                                  ).format(totalIncome),
-                                  color: Colors.green,
-                                ),
-                                StatItem(
-                                  label: l10n.expenses,
-                                  value: NumberFormat.currency(
-                                    symbol: r'$',
-                                  ).format(totalExpenses),
-                                  color: Colors.red,
-                                ),
-                                StatItem(
-                                  label: l10n.balance,
-                                  value: NumberFormat.currency(
-                                    symbol: r'$',
-                                  ).format(balance),
-                                  color: Colors.blue,
-                                ),
-                              ],
-                            );
-                          },
-                        ),
-                      ],
+                  // Records Section
+                  _AnimatedDashboardCard(
+                    delay: 100,
+                    child: _DashboardSection(
+                      icon: Icons.receipt_long,
+                      title: l10n.record,
+                      description: l10n.view_all_record,
+                      color: Colors.blue,
+                      onTap: () {
+                        AppRouter.navigationBottomBarShell.goBranch(1);
+                      },
                     ),
                   ),
-                ),
-                _AnimatedDashboardCard(delay: 400, child: Container()),
-              ]),
+
+                  const SizedBox(height: Spacing.normal),
+
+                  // Add Transaction Section
+                  _AnimatedDashboardCard(
+                    delay: 200,
+                    child: _DashboardSection(
+                      icon: Icons.add_circle,
+                      title: l10n.add_tracking,
+                      description: l10n.record_new_tracking,
+                      color: Colors.green,
+                      onTap: () async {
+                        await context.pushNamed(Pages.tracking.name);
+                      },
+                    ),
+                  ),
+
+                  const SizedBox(height: Spacing.normal),
+
+                  //Reports Section
+                  _AnimatedDashboardCard(
+                    delay: 300,
+                    child: _DashboardSection(
+                      icon: Icons.bar_chart,
+                      title: l10n.report,
+                      description: l10n.view_insights_analytics,
+                      color: Colors.purple,
+                      onTap: () {
+                        AppRouter.navigationBottomBarShell.goBranch(2);
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: Spacing.normal),
+
+                  //Saving Section
+                  _AnimatedDashboardCard(
+                    delay: 300,
+                    child: _DashboardSection(
+                      icon: Icons.savings_sharp,
+                      title: l10n.saving,
+                      description: l10n.daily_saving_reminder,
+                      color: Colors.pink,
+                      onTap: () async {
+                        await context.pushNamed(Pages.saving.name);
+                      },
+                    ),
+                  ),
+
+                  const SizedBox(height: Spacing.l1),
+
+                  // Quick Stats Section
+                  _AnimatedDashboardCard(
+                    delay: 400,
+                    child: Container(
+                      padding: const EdgeInsets.all(Spacing.l),
+                      decoration: BoxDecoration(
+                        color: context.colors.pureWhite,
+                        borderRadius: kBorderRadius,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.quick_stats,
+                            style: Theme.of(context).textTheme.titleLarge
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                          const SizedBox(height: Spacing.normal),
+                          BlocBuilder<TrackingBloc, TrackingState>(
+                            builder: (context, state) {
+                              final totalIncome = state.incomes.fold<double>(
+                                0,
+                                (sum, item) => sum + item.amount,
+                              );
+                              final totalExpenses = state.expenses.fold<double>(
+                                0,
+                                (sum, item) => sum + item.amount,
+                              );
+                              final balance = totalIncome - totalExpenses;
+
+                              return Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  StatItem(
+                                    label: l10n.income,
+                                    value: NumberFormat.currency(
+                                      symbol: r'$',
+                                    ).format(totalIncome),
+                                    color: Colors.green,
+                                  ),
+                                  StatItem(
+                                    label: l10n.expenses,
+                                    value: NumberFormat.currency(
+                                      symbol: r'$',
+                                    ).format(totalExpenses),
+                                    color: Colors.red,
+                                  ),
+                                  StatItem(
+                                    label: l10n.balance,
+                                    value: NumberFormat.currency(
+                                      symbol: r'$',
+                                    ).format(balance),
+                                    color: Colors.blue,
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const _AnimatedDashboardCard(
+                    delay: 400,
+                    child: SizedBox(
+                      height: 200,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ],
