@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:monee/core/bloc/budget/budget_bloc.dart';
+import 'package:monee/core/bloc/currency/currency_bloc.dart';
 import 'package:monee/core/bloc/lang/language_bloc.dart';
 import 'package:monee/core/bloc/tracking/tracking_bloc.dart';
 import 'package:monee/core/enums/enum.dart';
@@ -11,6 +12,7 @@ import 'package:monee/core/models/tracking_model.dart';
 import 'package:monee/core/routes/routes.dart';
 import 'package:monee/core/theme/spacing.dart';
 import 'package:monee/core/theme/theme.dart';
+import 'package:monee/core/utils/util.dart';
 import 'package:monee/l10n/l10n.dart';
 import 'package:monee/widgets/widgets.dart';
 
@@ -112,7 +114,13 @@ class _BadgetViewState extends State<BadgetView> {
               const initValue = 0.0;
               final totalExpense = monthlyTrackings
                   .where((t) => t.type == TrackingType.expense)
-                  .fold(initValue, (sum, t) => sum + t.amount);
+                  .fold(initValue, (sum, tracking) {
+                    final currencyAmount = CurrencyUtil.currencyAmount(
+                      context,
+                      tracking: tracking,
+                    );
+                    return sum + currencyAmount;
+                  });
 
               return ListView.separated(
                 separatorBuilder: (context, index) => Container(
@@ -129,9 +137,13 @@ class _BadgetViewState extends State<BadgetView> {
                           budget.category.id,
                           _selectedDate,
                         );
-                  final remaining = budget.budget - expense;
-                  final percentage = budget.budget > 0
-                      ? (remaining / budget.budget).clamp(
+                  final budgetAmount = CurrencyUtil.currencyAmount(
+                    context,
+                    budget: budget,
+                  );
+                  final remaining = budgetAmount - expense;
+                  final percentage = budgetAmount > 0
+                      ? (remaining / budgetAmount).clamp(
                           0.0,
                           1.0,
                         )
@@ -143,6 +155,7 @@ class _BadgetViewState extends State<BadgetView> {
                     monthlyBudget: budget.budget,
                     remaining: remaining,
                     totalExpense: expense,
+                    currencyType: budget.currency,
                     onPress: () => _showBudgetInputDialog(context, budget),
                   );
                 },
@@ -168,7 +181,13 @@ class _BadgetViewState extends State<BadgetView> {
     if (categoryId == 'monthly_budget') {
       return expenses
           .where((t) => _isInSelectedMonth(t.date, selectedDate))
-          .fold(0, (sum, t) => sum + t.amount);
+          .fold(0, (sum, tracking) {
+            final currencyAmount = CurrencyUtil.currencyAmount(
+              context,
+              tracking: tracking,
+            );
+            return sum + currencyAmount;
+          });
     } else {
       return expenses
           .where(
@@ -176,7 +195,13 @@ class _BadgetViewState extends State<BadgetView> {
                 t.category.id == categoryId &&
                 _isInSelectedMonth(t.date, selectedDate),
           )
-          .fold(0, (sum, t) => sum + t.amount);
+          .fold(0, (sum, tracking) {
+            final currencyAmount = CurrencyUtil.currencyAmount(
+              context,
+              tracking: tracking,
+            );
+            return sum + currencyAmount;
+          });
     }
   }
 
@@ -213,13 +238,21 @@ class _BadgetViewState extends State<BadgetView> {
               );
             },
           ),
-          content: TextField(
-            controller: controller,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: l10n.budget_amount,
-              hintText: l10n.enter_budget_amount,
-            ),
+          content: BlocBuilder<CurrencyBloc, CurrencyState>(
+            builder: (context, currencyState) {
+              final currrencyType =
+                  (budget.budget > 0 ? budget.currency : null) ??
+                  currencyState.selectCurrency;
+              return TextField(
+                controller: controller,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText:
+                      '${l10n.budget_amount} ${currrencyType.isUsd ? l10n.usd : l10n.khr}',
+                  hintText: l10n.enter_budget_amount,
+                ),
+              );
+            },
           ),
           actions: [
             TextButton(
@@ -231,18 +264,26 @@ class _BadgetViewState extends State<BadgetView> {
                 l10n.cancel,
               ),
             ),
-            FilledButton(
-              onPressed: () {
-                final value = num.tryParse(controller.text) ?? 0;
-                context.read<BudgetBloc>().add(
-                  BudgetSetBudget(
-                    categoryId: budget.category.id,
-                    budget: value,
-                  ),
+            BlocBuilder<CurrencyBloc, CurrencyState>(
+              builder: (context, currencyState) {
+                final currrencyType =
+                    (budget.budget > 0 ? budget.currency : null) ??
+                    currencyState.selectCurrency;
+                return FilledButton(
+                  onPressed: () {
+                    final value = num.tryParse(controller.text) ?? 0;
+                    context.read<BudgetBloc>().add(
+                      BudgetSetBudget(
+                        categoryId: budget.category.id,
+                        budget: value,
+                        currencyType: currrencyType,
+                      ),
+                    );
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(l10n.save),
                 );
-                Navigator.of(context).pop();
               },
-              child: Text(l10n.save),
             ),
           ],
         );

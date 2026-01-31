@@ -79,17 +79,31 @@ class _TrackingBalanceViewState extends State<TrackingBalanceView> {
 
           const initValue = 0.0;
           final totalExpense = _selectedYear == 'all'
-              ? trackings
-                    .where((t) => t.type == TrackingType.expense)
-                    .fold(initValue, (sum, t) => sum + t.amount)
+              ? trackings.where((t) => t.type == TrackingType.expense).fold(
+                  initValue,
+                  (sum, tracking) {
+                    final currencyAmount = CurrencyUtil.currencyAmount(
+                      context,
+                      tracking: tracking,
+                    );
+                    return sum + currencyAmount;
+                  },
+                )
               : monthlyData.values.fold(
                   initValue,
                   (sum, data) => sum + data['expense']!,
                 );
           final totalIncome = _selectedYear == 'all'
-              ? trackings
-                    .where((t) => t.type == TrackingType.income)
-                    .fold(initValue, (sum, t) => sum + t.amount)
+              ? trackings.where((t) => t.type == TrackingType.income).fold(
+                  initValue,
+                  (sum, tracking) {
+                    final currencyAmount = CurrencyUtil.currencyAmount(
+                      context,
+                      tracking: tracking,
+                    );
+                    return sum + currencyAmount;
+                  },
+                )
               : monthlyData.values.fold(
                   initValue,
                   (sum, data) => sum + data['income']!,
@@ -110,7 +124,10 @@ class _TrackingBalanceViewState extends State<TrackingBalanceView> {
                           style: context.textTheme.titleLarge,
                         ),
                         Text(
-                          '\$${totalBalance.toStringAsFixed(2)}',
+                          CurrencyUtil.caculateFormatCurrency(
+                            context,
+                            totalBalance,
+                          ),
                           style: Theme.of(context).textTheme.headlineMedium
                               ?.copyWith(
                                 color: totalBalance >= 0
@@ -133,7 +150,10 @@ class _TrackingBalanceViewState extends State<TrackingBalanceView> {
                               ),
                             ),
                             Text(
-                              '\$${totalExpense.toStringAsFixed(2)}',
+                              CurrencyUtil.caculateFormatCurrency(
+                                context,
+                                totalExpense,
+                              ),
                               style: context.textTheme.titleLarge?.copyWith(
                                 color: context.colors.redPrimary,
                                 fontWeight: FontWeight.bold,
@@ -150,7 +170,10 @@ class _TrackingBalanceViewState extends State<TrackingBalanceView> {
                               ),
                             ),
                             Text(
-                              '\$${totalIncome.toStringAsFixed(2)}',
+                              CurrencyUtil.caculateFormatCurrency(
+                                context,
+                                totalIncome,
+                              ),
                               style: context.textTheme.titleLarge?.copyWith(
                                 color: context.colors.greenPrimary,
                                 fontWeight: FontWeight.bold,
@@ -250,13 +273,22 @@ class _TrackingBalanceViewState extends State<TrackingBalanceView> {
                                 getMonthName(int.tryParse(month) ?? 1, l10n),
                               ),
                               Text(
-                                '\$${data['expense']!.toStringAsFixed(2)}',
+                                CurrencyUtil.caculateFormatCurrency(
+                                  context,
+                                  data['expense']!,
+                                ),
                               ),
                               Text(
-                                '\$${data['income']!.toStringAsFixed(2)}',
+                                CurrencyUtil.caculateFormatCurrency(
+                                  context,
+                                  data['income']!,
+                                ),
                               ),
                               Text(
-                                '\$${(data['income']! - data['expense']!).toStringAsFixed(2)}',
+                                CurrencyUtil.caculateFormatCurrency(
+                                  context,
+                                  data['income']! - data['expense']!,
+                                ),
                                 style: TextStyle(
                                   color:
                                       (data['income']! - data['expense']!) >= 0
@@ -286,6 +318,10 @@ class _TrackingBalanceViewState extends State<TrackingBalanceView> {
     final monthlyData = <String, Map<String, double>>{};
 
     for (final tracking in trackings) {
+      final currencyAmount = CurrencyUtil.currencyAmount(
+        context,
+        tracking: tracking,
+      );
       try {
         final date = DateTime.parse(tracking.date);
         final year = date.year.toString();
@@ -297,10 +333,10 @@ class _TrackingBalanceViewState extends State<TrackingBalanceView> {
         monthlyData[key] ??= {'expense': 0, 'income': 0};
         if (tracking.type == TrackingType.expense) {
           monthlyData[key]!['expense'] =
-              monthlyData[key]!['expense']! + tracking.amount;
+              monthlyData[key]!['expense']! + currencyAmount;
         } else if (tracking.type == TrackingType.income) {
           monthlyData[key]!['income'] =
-              monthlyData[key]!['income']! + tracking.amount;
+              monthlyData[key]!['income']! + currencyAmount;
         }
       } on Exception catch (_) {
         // Skip invalid dates

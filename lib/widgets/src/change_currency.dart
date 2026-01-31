@@ -1,29 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:monee/core/bloc/lang/language_bloc.dart';
+import 'package:monee/core/bloc/currency/currency_bloc.dart';
+import 'package:monee/core/common/common.dart';
+import 'package:monee/core/enums/enum.dart';
 import 'package:monee/core/extensions/extension.dart';
 import 'package:monee/l10n/l10n.dart';
 
-class ChangeLanguage extends StatefulWidget {
-  const ChangeLanguage({super.key});
+class ChangeCurrency extends StatefulWidget {
+  const ChangeCurrency({super.key});
 
   @override
-  State<ChangeLanguage> createState() => _ChangeLanguageState();
+  State<ChangeCurrency> createState() => _ChangeCurrencyState();
 }
 
-class _ChangeLanguageState extends State<ChangeLanguage> {
-  late Locale _selectedLanguage;
+class _ChangeCurrencyState extends State<ChangeCurrency> {
+  late CurrencyType _selectedCurrency;
 
   @override
   void initState() {
     super.initState();
-    final languageState = context.read<LanguageBloc>().state;
-    _selectedLanguage = languageState.selectLanguage;
+    final currencyState = context.read<CurrencyBloc>().state;
+    _selectedCurrency = currencyState.selectCurrency;
   }
 
   void _onSaveLanguage() {
-    context.read<LanguageBloc>().add(
-      LanguageAppChange(locale: _selectedLanguage),
+    context.read<CurrencyBloc>().add(
+      CurrencyAppChange(currency: _selectedCurrency),
     );
     Navigator.pop(context);
   }
@@ -34,25 +36,26 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
 
     return AlertDialog(
       title: Text(l10n.language),
-      content: RadioGroup<Locale>(
-        groupValue: _selectedLanguage,
+      contentPadding: EdgeInsets.zero,
+      content: RadioGroup<CurrencyType>(
+        groupValue: _selectedCurrency,
         onChanged: (value) {
           setState(() {
-            _selectedLanguage = value!;
+            _selectedCurrency = value!;
           });
         },
-        child: const Column(
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _LanguageOption(
-              locale: Locale('km'),
-              label: 'ខ្មែរ',
-              image: 'assets/images/km_flag.png',
+            _CurrencyOption(
+              currency: CurrencyType.usd,
+              label: l10n.usd,
+              image: ImagePaths.usd,
             ),
-            _LanguageOption(
-              locale: Locale('en'),
-              label: 'English',
-              image: 'assets/images/en_flag.png',
+            _CurrencyOption(
+              currency: CurrencyType.khr,
+              label: l10n.khr,
+              image: ImagePaths.khr,
             ),
           ],
         ),
@@ -77,14 +80,14 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
   }
 }
 
-class _LanguageOption extends StatelessWidget {
-  const _LanguageOption({
-    required this.locale,
+class _CurrencyOption extends StatelessWidget {
+  const _CurrencyOption({
+    required this.currency,
     required this.label,
     required this.image,
   });
 
-  final Locale locale;
+  final CurrencyType currency;
   final String label;
   final String image;
 
@@ -96,13 +99,13 @@ class _LanguageOption extends StatelessWidget {
         child: Image.asset(
           image,
           width: 30,
-          height: 20,
-          fit: BoxFit.cover,
+          height: 30,
+          fit: BoxFit.contain,
         ),
       ),
       title: Text(label),
-      trailing: Radio<Locale>(
-        value: locale,
+      trailing: Radio<CurrencyType>(
+        value: currency,
       ),
     );
   }

@@ -1,4 +1,5 @@
 export './src/budget_item.dart';
+export './src/change_currency.dart';
 export './src/change_language.dart';
 export './src/custom_button.dart';
 export './src/custom_image.dart';

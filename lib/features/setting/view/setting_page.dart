@@ -38,6 +38,13 @@ class SettingView extends StatelessWidget {
     );
   }
 
+  Future<void> _showCurrencyDialog(BuildContext context) async {
+    await showDialog<void>(
+      context: context,
+      builder: (_) => const ChangeCurrency(),
+    );
+  }
+
   Future<String> getAppVersion() async {
     final info = await PackageInfo.fromPlatform();
     final version = kDebugMode
@@ -81,6 +88,23 @@ class SettingView extends StatelessWidget {
                     ),
                     trailing: const Icon(Icons.arrow_forward_ios),
                     onTap: () => _showLanguageDialog(context),
+                  ),
+                  ListTile(
+                    leading: const Icon(
+                      Icons.currency_exchange_rounded,
+                      size: 40,
+                      color: Colors.amber,
+                    ),
+                    title: Text(
+                      l10n.currency,
+                      style: context.textTheme.titleLarge,
+                    ),
+                    subtitle: Text(
+                      l10n.press_here_to_change_currency,
+                      style: context.textTheme.bodyLarge,
+                    ),
+                    trailing: const Icon(Icons.arrow_forward_ios),
+                    onTap: () => _showCurrencyDialog(context),
                   ),
                   const SizedBox(height: Spacing.sm),
                   BlocBuilder<ThemeBloc, ThemeState>(

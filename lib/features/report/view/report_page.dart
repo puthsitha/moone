@@ -4,13 +4,12 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:monee/core/bloc/budget/budget_bloc.dart';
 import 'package:monee/core/bloc/tracking/tracking_bloc.dart';
-import 'package:monee/core/common/common.dart';
 import 'package:monee/core/enums/enum.dart';
 import 'package:monee/core/extensions/extension.dart';
 import 'package:monee/core/routes/routes.dart';
 import 'package:monee/core/theme/spacing.dart';
+import 'package:monee/core/utils/util.dart';
 import 'package:monee/l10n/l10n.dart';
-import 'package:monee/widgets/widgets.dart';
 
 class ReportPage extends StatelessWidget {
   const ReportPage({super.key});
@@ -57,14 +56,29 @@ class ReportView extends StatelessWidget {
               const initValue = 0.0;
               final totalExpense = monthlyTrackings
                   .where((t) => t.type == TrackingType.expense)
-                  .fold(initValue, (sum, t) => sum + t.amount);
+                  .fold(initValue, (sum, tracking) {
+                    final currencyAmount = CurrencyUtil.currencyAmount(
+                      context,
+                      tracking: tracking,
+                    );
+                    return sum + currencyAmount;
+                  });
               final totalIncome = monthlyTrackings
                   .where((t) => t.type == TrackingType.income)
-                  .fold(initValue, (sum, t) => sum + t.amount);
+                  .fold(initValue, (sum, tracking) {
+                    final currencyAmount = CurrencyUtil.currencyAmount(
+                      context,
+                      tracking: tracking,
+                    );
+                    return sum + currencyAmount;
+                  });
               final balance = totalIncome - totalExpense;
 
               // Assuming a monthly budget of $5000 for demonstration
-              final monthlyBudget = budgetState.budgets.first.budget;
+              final monthlyBudget = CurrencyUtil.currencyAmount(
+                context,
+                budget: budgetState.budgets.first,
+              );
               final remaining = monthlyBudget - totalExpense;
               final remainingPercentage = (remaining / monthlyBudget).clamp(
                 0.0,
@@ -81,6 +95,10 @@ class ReportView extends StatelessWidget {
                         await context.pushNamed(Pages.trackingBalance.name);
                       },
                       borderRadius: BorderRadius.circular(12),
+                      splashColor: Colors.blue.shade200.withValues(alpha: .1),
+                      highlightColor: Colors.blue.shade200.withValues(
+                        alpha: 0.05,
+                      ),
                       child: Container(
                         padding: const EdgeInsets.all(Spacing.normal),
                         decoration: BoxDecoration(
@@ -119,7 +137,10 @@ class ReportView extends StatelessWidget {
                                       ),
                                 ),
                                 Text(
-                                  '\$${totalExpense.toStringAsFixed(2)}',
+                                  CurrencyUtil.caculateFormatCurrency(
+                                    context,
+                                    totalExpense,
+                                  ),
                                   style: context.textTheme.titleMedium
                                       ?.copyWith(
                                         color: context.colors.redPrimary,
@@ -137,7 +158,10 @@ class ReportView extends StatelessWidget {
                                       ),
                                 ),
                                 Text(
-                                  '\$${totalIncome.toStringAsFixed(2)}',
+                                  CurrencyUtil.caculateFormatCurrency(
+                                    context,
+                                    totalIncome,
+                                  ),
                                   style: context.textTheme.titleMedium
                                       ?.copyWith(
                                         color: context.colors.greenPrimary,
@@ -152,7 +176,10 @@ class ReportView extends StatelessWidget {
                                   style: context.textTheme.titleMedium,
                                 ),
                                 Text(
-                                  '\$${balance.toStringAsFixed(2)}',
+                                  CurrencyUtil.caculateFormatCurrency(
+                                    context,
+                                    balance,
+                                  ),
                                   style: context.textTheme.titleMedium
                                       ?.copyWith(
                                         color: balance >= 0
@@ -173,6 +200,10 @@ class ReportView extends StatelessWidget {
                         await context.pushNamed(Pages.budget.name);
                       },
                       borderRadius: BorderRadius.circular(12),
+                      splashColor: Colors.green.shade200.withValues(alpha: .1),
+                      highlightColor: Colors.green.shade200.withValues(
+                        alpha: 0.05,
+                      ),
                       child: Container(
                         padding: const EdgeInsets.all(Spacing.normal),
                         decoration: BoxDecoration(
@@ -218,7 +249,7 @@ class ReportView extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Text(
-                                    '${l10n.budget}: \$${monthlyBudget.toStringAsFixed(2)}',
+                                    '${l10n.budget}: ${CurrencyUtil.caculateFormatCurrency(context, monthlyBudget)}',
                                     style: context.textTheme.titleLarge
                                         ?.copyWith(
                                           fontWeight: FontWeight.bold,
@@ -226,14 +257,14 @@ class ReportView extends StatelessWidget {
                                   ),
                                   const Divider(),
                                   Text(
-                                    '${l10n.expense}: \$${totalExpense.toStringAsFixed(2)}',
+                                    '${l10n.expense}: ${CurrencyUtil.caculateFormatCurrency(context, totalExpense)}',
                                     style: context.textTheme.bodyMedium
                                         ?.copyWith(
                                           color: context.colors.redPrimary,
                                         ),
                                   ),
                                   Text(
-                                    '${l10n.remaining}: \$${remaining.toStringAsFixed(2)}',
+                                    '${l10n.remaining}: ${CurrencyUtil.caculateFormatCurrency(context, remaining)}',
                                     style: context.textTheme.bodyMedium
                                         ?.copyWith(
                                           color: remaining >= 0
@@ -246,69 +277,6 @@ class ReportView extends StatelessWidget {
                             ),
                           ],
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: Spacing.normal),
-                    Container(
-                      padding: const EdgeInsets.all(Spacing.l),
-                      decoration: BoxDecoration(
-                        // color: context.colors.pureWhite,
-                        borderRadius: kBorderRadius,
-                        border: Border.all(color: Colors.pinkAccent.shade200),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.quick_stats,
-                            style: Theme.of(context).textTheme.titleLarge
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          ),
-                          const SizedBox(height: Spacing.normal),
-                          BlocBuilder<TrackingBloc, TrackingState>(
-                            builder: (context, state) {
-                              final totalIncome = state.incomes.fold<double>(
-                                0,
-                                (sum, item) => sum + item.amount,
-                              );
-                              final totalExpenses = state.expenses.fold<double>(
-                                0,
-                                (sum, item) => sum + item.amount,
-                              );
-                              final balance = totalIncome - totalExpenses;
-
-                              return Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
-                                children: [
-                                  StatItem(
-                                    label: l10n.income,
-                                    value: NumberFormat.currency(
-                                      symbol: r'$',
-                                    ).format(totalIncome),
-                                    color: Colors.green,
-                                  ),
-                                  StatItem(
-                                    label: l10n.expenses,
-                                    value: NumberFormat.currency(
-                                      symbol: r'$',
-                                    ).format(totalExpenses),
-                                    color: Colors.red,
-                                  ),
-                                  StatItem(
-                                    label: l10n.balance,
-                                    value: NumberFormat.currency(
-                                      symbol: r'$',
-                                    ).format(balance),
-                                    color: Colors.blue,
-                                  ),
-                                ],
-                              );
-                            },
-                          ),
-                        ],
                       ),
                     ),
                   ],

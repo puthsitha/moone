@@ -4,6 +4,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:intl/intl.dart';
 import 'package:monee/core/bloc/budget/budget_bloc.dart';
 import 'package:monee/core/bloc/category/category_bloc.dart';
+import 'package:monee/core/bloc/currency/currency_bloc.dart';
 import 'package:monee/core/bloc/lang/language_bloc.dart';
 import 'package:monee/core/bloc/theme/theme_bloc.dart';
 import 'package:monee/core/bloc/tracking/tracking_bloc.dart';
@@ -43,6 +44,9 @@ class _AppState extends State<App> {
       providers: [
         BlocProvider(
           create: (context) => LanguageBloc(),
+        ),
+        BlocProvider(
+          create: (context) => CurrencyBloc(),
         ),
         BlocProvider(
           create: (context) => ThemeBloc(),

@@ -1,3 +1,4 @@
+export 'src/currency_util.dart';
 export 'src/gradient_util.dart';
 export 'src/month_util.dart';
 export 'src/open_url.dart';

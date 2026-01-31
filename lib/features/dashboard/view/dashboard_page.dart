@@ -2,13 +2,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:monee/core/bloc/tracking/tracking_bloc.dart';
 import 'package:monee/core/common/common.dart' hide Icons;
 import 'package:monee/core/extensions/extension.dart';
 import 'package:monee/core/routes/routes.dart';
 import 'package:monee/core/theme/spacing.dart';
 import 'package:monee/core/theme/theme.dart';
+import 'package:monee/core/utils/util.dart';
 
 import 'package:monee/l10n/l10n.dart';
 import 'package:monee/widgets/widgets.dart';
@@ -241,11 +241,25 @@ class _DashboardViewState extends State<DashboardView>
                             builder: (context, state) {
                               final totalIncome = state.incomes.fold<double>(
                                 0,
-                                (sum, item) => sum + item.amount,
+                                (sum, item) {
+                                  final currencyAmount =
+                                      CurrencyUtil.currencyAmount(
+                                        context,
+                                        tracking: item,
+                                      );
+                                  return sum + currencyAmount;
+                                },
                               );
                               final totalExpenses = state.expenses.fold<double>(
                                 0,
-                                (sum, item) => sum + item.amount,
+                                (sum, item) {
+                                  final currencyAmount =
+                                      CurrencyUtil.currencyAmount(
+                                        context,
+                                        tracking: item,
+                                      );
+                                  return sum + currencyAmount;
+                                },
                               );
                               final balance = totalIncome - totalExpenses;
 
@@ -255,23 +269,26 @@ class _DashboardViewState extends State<DashboardView>
                                 children: [
                                   StatItem(
                                     label: l10n.income,
-                                    value: NumberFormat.currency(
-                                      symbol: r'$',
-                                    ).format(totalIncome),
+                                    value: CurrencyUtil.caculateFormatCurrency(
+                                      context,
+                                      totalIncome,
+                                    ),
                                     color: Colors.green,
                                   ),
                                   StatItem(
                                     label: l10n.expenses,
-                                    value: NumberFormat.currency(
-                                      symbol: r'$',
-                                    ).format(totalExpenses),
+                                    value: CurrencyUtil.caculateFormatCurrency(
+                                      context,
+                                      totalExpenses,
+                                    ),
                                     color: Colors.red,
                                   ),
                                   StatItem(
                                     label: l10n.balance,
-                                    value: NumberFormat.currency(
-                                      symbol: r'$',
-                                    ).format(balance),
+                                    value: CurrencyUtil.caculateFormatCurrency(
+                                      context,
+                                      balance,
+                                    ),
                                     color: Colors.blue,
                                   ),
                                 ],
