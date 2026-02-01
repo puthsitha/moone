@@ -5,7 +5,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:go_router/go_router.dart';
 import 'package:monee/core/routes/routes.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -19,9 +18,6 @@ class NotificationService {
       FlutterLocalNotificationsPlugin();
 
   Future<void> init() async {
-    // Request notification permissions first
-    await _requestNotificationPermission();
-
     // Initialize timezone data - this automatically sets up the local timezone
     tz.initializeTimeZones();
     final currentTimeZone = await FlutterTimezone.getLocalTimezone();
@@ -51,53 +47,33 @@ class NotificationService {
       importance: Importance.max,
     );
 
+    if (Platform.isAndroid) {
+      final androidPermission = await _flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >()
+          ?.requestNotificationsPermission();
+      log('android permission : $androidPermission');
+    }
+
+    if (Platform.isIOS) {
+      final iosPermission = await _flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin
+          >()
+          ?.requestPermissions(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
+      log('ios permission : $iosPermission');
+    }
+
     await _flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
           AndroidFlutterLocalNotificationsPlugin
         >()
         ?.createNotificationChannel(channel);
-  }
-
-  /// Request notification permissions using permission_handler
-  Future<void> _requestNotificationPermission() async {
-    if (Platform.isAndroid) {
-      // Request POST_NOTIFICATIONS permission on Android 13+
-      final status = await Permission.notification.request();
-      log(
-        'Android notification permission: ${status.isDenied
-            ? 'Denied'
-            : status.isGranted
-            ? 'Granted'
-            : status.isPermanentlyDenied
-            ? 'Permanently Denied'
-            : 'Unknown'}',
-      );
-    } else if (Platform.isIOS) {
-      // Request notification permissions on iOS
-      final status = await Permission.notification.request();
-      log(
-        'iOS notification permission: ${status.isDenied
-            ? 'Denied'
-            : status.isGranted
-            ? 'Granted'
-            : status.isPermanentlyDenied
-            ? 'Permanently Denied'
-            : 'Unknown'}',
-      );
-
-      // Also request iOS specific permissions if granted
-      if (status.isGranted) {
-        await _flutterLocalNotificationsPlugin
-            .resolvePlatformSpecificImplementation<
-              IOSFlutterLocalNotificationsPlugin
-            >()
-            ?.requestPermissions(
-              alert: true,
-              badge: true,
-              sound: true,
-            );
-      }
-    }
   }
 
   Future<void> _onDidReceiveNotificationResponse(

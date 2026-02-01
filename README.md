@@ -1,12 +1,76 @@
 # Monee
 
+<img src="assets/images/logo.png" width="300">
+
 ![coverage][coverage_badge]
 [![style: very good analysis][very_good_analysis_badge]][very_good_analysis_link]
 [![License: MIT][license_badge]][license_link]
 
 Finance Management App Friendly and Easy Experiment
 
----
+## Description
+
+**1st** 2026 personal project inspire ✨ by my girlfriend 🩵
+
+## ⏰ Working application
+
+<table>
+  <tr>
+    <th>Page</th>
+    <th>Light Mode</th>
+    <th>Dark Mode</th>
+  </tr>
+  <tr>
+    <td><strong>Home</strong></td>
+    <td><img src="assets/docs/light_en/home_page.png" width="300"></td>
+    <td><img src="assets/docs/dark_km/home_page.png" width="300"></td>
+  </tr>
+  <tr>
+    <td><strong>Record</strong></td>
+    <td><img src="assets/docs/light_en/record_page.png" width="300"></td>
+    <td><img src="assets/docs/dark_km/record_page.png" width="300"></td>
+  </tr>
+  <tr>
+    <td><strong>Category</strong></td>
+    <td><img src="assets/docs/light_en/category_page.png" width="300"></td>
+    <td><img src="assets/docs/dark_km/category_page.png" width="300"></td>
+  </tr>
+  <tr>
+    <td><strong>Category Form</strong></td>
+    <td><img src="assets/docs/light_en/category_form_page.png" width="300"></td>
+    <td><img src="assets/docs/dark_km/category_form_page.png" width="300"></td>
+  </tr>
+  <tr>
+    <td><strong>Tracking</strong></td>
+    <td><img src="assets/docs/light_en/tracking_page.png" width="300"></td>
+    <td><img src="assets/docs/dark_km/tracking_page.png" width="300"></td>
+  </tr>
+  <tr>
+    <td><strong>Tracking Form</strong></td>
+    <td><img src="assets/docs/light_en/tracking_form_page.png" width="300"></td>
+    <td><img src="assets/docs/dark_km/tracking_form_page.png" width="300"></td>
+  </tr>
+  <tr>
+    <td><strong>Saving</strong></td>
+    <td><img src="assets/docs/light_en/saving_page.png" width="300"></td>
+    <td><img src="assets/docs/dark_km/saving_page.png" width="300"></td>
+  </tr>
+  <tr>
+    <td><strong>Search</strong></td>
+    <td><img src="assets/docs/light_en/search_page.png" width="300"></td>
+    <td><img src="assets/docs/dark_km/search_page.png" width="300"></td>
+  </tr>
+  <tr>
+    <td><strong>Calender</strong></td>
+    <td><img src="assets/docs/light_en/canlender_page.png" width="300"></td>
+    <td><img src="assets/docs/dark_km/canlender_page.png" width="300"></td>
+  </tr>
+  <tr>
+    <td><strong>Setting</strong></td>
+    <td><img src="assets/docs/light_en/setting_page.png" width="300"></td>
+    <td><img src="assets/docs/dark_km/setting_page.png" width="300"></td>
+  </tr>
+</table>
 
 ## Getting Started 🚀
 

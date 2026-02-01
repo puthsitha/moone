@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:monee/core/bloc/budget/budget_bloc.dart';
+import 'package:monee/core/bloc/currency/currency_bloc.dart';
 import 'package:monee/core/bloc/lang/language_bloc.dart';
-import 'package:monee/core/extensions/src/build_context_ext.dart';
+import 'package:monee/core/extensions/extension.dart';
 import 'package:monee/core/models/budget_model.dart';
+import 'package:monee/core/utils/util.dart';
 import 'package:monee/l10n/l10n.dart';
 
 class BudgeteSettingPage extends StatelessWidget {
@@ -80,20 +81,30 @@ class BudgetSettingView extends StatelessWidget {
                                       Navigator.of(context).pop(false),
                                   child: Text(l10n.cancel),
                                 ),
-                                FilledButton(
-                                  style: FilledButton.styleFrom(
-                                    backgroundColor: Colors.red,
-                                  ),
-                                  onPressed: () {
-                                    context.read<BudgetBloc>().add(
-                                      BudgetSetBudget(
-                                        categoryId: budget.category.id,
-                                        budget: 0,
+                                BlocBuilder<CurrencyBloc, CurrencyState>(
+                                  builder: (context, currencyState) {
+                                    final currrencyType =
+                                        (budget.budget > 0
+                                            ? budget.currency
+                                            : null) ??
+                                        currencyState.selectCurrency;
+                                    return FilledButton(
+                                      style: FilledButton.styleFrom(
+                                        backgroundColor: Colors.red,
                                       ),
+                                      onPressed: () {
+                                        context.read<BudgetBloc>().add(
+                                          BudgetSetBudget(
+                                            categoryId: budget.category.id,
+                                            budget: 0,
+                                            currencyType: currrencyType,
+                                          ),
+                                        );
+                                        context.pop();
+                                      },
+                                      child: Text(l10n.remove),
                                     );
-                                    context.pop();
                                   },
-                                  child: Text(l10n.remove),
                                 ),
                               ],
                             ),
@@ -112,9 +123,10 @@ class BudgetSettingView extends StatelessWidget {
                 ),
                 trailing: budget.budget > 0
                     ? Text(
-                        NumberFormat.currency(
-                          symbol: r'$',
-                        ).format(budget.budget),
+                        CurrencyUtil.caculateFormatCurrency(
+                          context,
+                          budget.budget,
+                        ),
                         style: context.textTheme.bodyMedium?.copyWith(
                           color: context.colors.primary,
                         ),
@@ -161,13 +173,21 @@ class BudgetSettingView extends StatelessWidget {
               );
             },
           ),
-          content: TextField(
-            controller: controller,
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              labelText: l10n.budget_amount,
-              hintText: l10n.enter_budget_amount,
-            ),
+          content: BlocBuilder<CurrencyBloc, CurrencyState>(
+            builder: (context, currencyState) {
+              final currrencyType =
+                  (budget.budget > 0 ? budget.currency : null) ??
+                  currencyState.selectCurrency;
+              return TextField(
+                controller: controller,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText:
+                      '${l10n.budget_amount} ${currrencyType.isUsd ? l10n.usd : l10n.khr}',
+                  hintText: l10n.enter_budget_amount,
+                ),
+              );
+            },
           ),
           actions: [
             TextButton(
@@ -177,18 +197,26 @@ class BudgetSettingView extends StatelessWidget {
               onPressed: () => Navigator.of(context).pop(),
               child: Text(l10n.cancel),
             ),
-            FilledButton(
-              onPressed: () {
-                final value = num.tryParse(controller.text) ?? 0;
-                context.read<BudgetBloc>().add(
-                  BudgetSetBudget(
-                    categoryId: budget.category.id,
-                    budget: value,
-                  ),
+            BlocBuilder<CurrencyBloc, CurrencyState>(
+              builder: (context, currencyState) {
+                final currrencyType =
+                    (budget.budget > 0 ? budget.currency : null) ??
+                    currencyState.selectCurrency;
+                return FilledButton(
+                  onPressed: () {
+                    final value = num.tryParse(controller.text) ?? 0;
+                    context.read<BudgetBloc>().add(
+                      BudgetSetBudget(
+                        categoryId: budget.category.id,
+                        budget: value,
+                        currencyType: currrencyType,
+                      ),
+                    );
+                    Navigator.of(context).pop();
+                  },
+                  child: Text(l10n.save),
                 );
-                Navigator.of(context).pop();
               },
-              child: Text(l10n.save),
             ),
           ],
         );

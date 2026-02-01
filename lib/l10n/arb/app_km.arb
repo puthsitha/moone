@@ -259,5 +259,13 @@
         "description": "saving name"
       }
     }
-  }
+  },
+  "currency": "រូបិយប័ណ្ណ",
+  "@currency": {},
+  "press_here_to_change_currency": "ចុចទីនេះដើម្បីប្តូររូបិយប័ណ្ណ",
+  "@press_here_to_change_currency": {},
+  "usd": "USD (ដុល្លារ)",
+  "@usd": {},
+  "khr": "KHR (រៀល)",
+  "@khr": {}
 }

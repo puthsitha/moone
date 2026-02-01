@@ -67,9 +67,17 @@ class _RecordViewState extends State<RecordView> {
         // Calculate totals
         double totalExpense = 0;
         double totalIncome = 0;
-        for (final t in allTrackings) {
-          if (t.type == TrackingType.expense) totalExpense += t.amount;
-          if (t.type == TrackingType.income) totalIncome += t.amount;
+        for (final tracking in allTrackings) {
+          final currencyAmount = CurrencyUtil.currencyAmount(
+            context,
+            tracking: tracking,
+          );
+          if (tracking.type == TrackingType.expense) {
+            totalExpense += currencyAmount;
+          }
+          if (tracking.type == TrackingType.income) {
+            totalIncome += currencyAmount;
+          }
         }
         final balance = totalIncome - totalExpense;
 
@@ -122,7 +130,10 @@ class _RecordViewState extends State<RecordView> {
                           children: [
                             Text(l10n.expense),
                             Text(
-                              '\$${totalExpense.toStringAsFixed(2)}',
+                              CurrencyUtil.caculateFormatCurrency(
+                                context,
+                                totalExpense,
+                              ),
                               style: context.textTheme.bodyMedium?.copyWith(
                                 color: context.colors.redPrimary,
                               ),
@@ -141,7 +152,10 @@ class _RecordViewState extends State<RecordView> {
                           children: [
                             Text(l10n.income),
                             Text(
-                              '\$${totalIncome.toStringAsFixed(2)}',
+                              CurrencyUtil.caculateFormatCurrency(
+                                context,
+                                totalIncome,
+                              ),
                               style: context.textTheme.bodyMedium?.copyWith(
                                 color: context.colors.greenPrimary,
                               ),
@@ -157,7 +171,10 @@ class _RecordViewState extends State<RecordView> {
                         children: [
                           Text(l10n.balance),
                           Text(
-                            '\$${balance.toStringAsFixed(2)}',
+                            CurrencyUtil.caculateFormatCurrency(
+                              context,
+                              balance,
+                            ),
                             style: context.textTheme.bodyMedium?.copyWith(
                               color: balance > 0
                                   ? context.colors.primary
@@ -220,10 +237,22 @@ class _RecordViewState extends State<RecordView> {
                       const initValue = 0.0;
                       final dayExpense = trackings
                           .where((t) => t.type == TrackingType.expense)
-                          .fold(initValue, (sum, t) => sum + t.amount);
+                          .fold(initValue, (sum, tracking) {
+                            final currencyAmount = CurrencyUtil.currencyAmount(
+                              context,
+                              tracking: tracking,
+                            );
+                            return sum + currencyAmount;
+                          });
                       final dayIncome = trackings
                           .where((t) => t.type == TrackingType.income)
-                          .fold(initValue, (sum, t) => sum + t.amount);
+                          .fold(initValue, (sum, tracking) {
+                            final currencyAmount = CurrencyUtil.currencyAmount(
+                              context,
+                              tracking: tracking,
+                            );
+                            return sum + currencyAmount;
+                          });
                       return Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -243,7 +272,10 @@ class _RecordViewState extends State<RecordView> {
                                     children: [
                                       TextSpan(
                                         text:
-                                            '\$${dayExpense.toStringAsFixed(2)}',
+                                            CurrencyUtil.caculateFormatCurrency(
+                                              context,
+                                              dayExpense,
+                                            ),
                                         style: context.textTheme.bodyMedium
                                             ?.copyWith(
                                               color: context.colors.redPrimary,
@@ -259,7 +291,10 @@ class _RecordViewState extends State<RecordView> {
                                     children: [
                                       TextSpan(
                                         text:
-                                            '\$${dayIncome.toStringAsFixed(2)}',
+                                            CurrencyUtil.caculateFormatCurrency(
+                                              context,
+                                              dayIncome,
+                                            ),
                                         style: context.textTheme.bodyMedium
                                             ?.copyWith(
                                               color:

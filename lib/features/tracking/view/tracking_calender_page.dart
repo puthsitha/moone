@@ -9,6 +9,7 @@ import 'package:monee/core/models/tracking_model.dart';
 import 'package:monee/core/routes/routes.dart';
 import 'package:monee/core/theme/colors.dart';
 import 'package:monee/core/theme/spacing.dart';
+import 'package:monee/core/utils/util.dart';
 import 'package:monee/widgets/widgets.dart';
 
 class TrackingCalenderPage extends StatelessWidget {
@@ -101,6 +102,10 @@ class _TrackingCalenderViewState extends State<TrackingCalenderView> {
     final totals = <DateTime, Map<TrackingType, double>>{};
 
     for (final tracking in trackings) {
+      final currencyAmount = CurrencyUtil.currencyAmount(
+        context,
+        tracking: tracking,
+      );
       try {
         final date = DateTime.parse(tracking.date);
         if (date.year == selectedDate.year &&
@@ -112,8 +117,7 @@ class _TrackingCalenderViewState extends State<TrackingCalenderView> {
             TrackingType.saving: 0,
           };
           totals[dayKey]![tracking.type] =
-              (totals[dayKey]![tracking.type] ?? 0) +
-              tracking.amount.toDouble();
+              (totals[dayKey]![tracking.type] ?? 0) + currencyAmount.toDouble();
         }
       } on Exception catch (_) {
         // Skip invalid dates
@@ -186,10 +190,16 @@ class CalendarGrid extends StatelessWidget {
               final date = DateTime(selectedDate.year, selectedDate.month, day);
               final totals = dailyTotals[date] ?? {};
 
+              final isToday =
+                  date.year == DateTime.now().year &&
+                  date.month == DateTime.now().month &&
+                  date.day == DateTime.now().day;
+
               return CalendarDayCell(
                 day: day,
                 expense: totals[TrackingType.expense] ?? 0,
                 income: totals[TrackingType.income] ?? 0,
+                isToday: isToday,
                 onTap: () async {
                   await context.pushNamed(
                     Pages.trackingCalenderDetail.name,
@@ -210,6 +220,7 @@ class CalendarDayCell extends StatelessWidget {
     required this.day,
     required this.expense,
     required this.income,
+    required this.isToday,
     required this.onTap,
     super.key,
   });
@@ -217,6 +228,7 @@ class CalendarDayCell extends StatelessWidget {
   final int day;
   final double expense;
   final double income;
+  final bool isToday;
   final VoidCallback onTap;
 
   @override
@@ -228,7 +240,8 @@ class CalendarDayCell extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.all(2),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade300),
+          color: isToday ? context.colors.primary.withValues(alpha: 0.3) : null,
+          border: Border.all(color: context.colors.primary),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Column(
@@ -249,6 +262,9 @@ class CalendarDayCell extends StatelessWidget {
                     color: context.colors.redPrimary,
                     fontSize: 10,
                   ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               if (income > 0)
                 Text(
@@ -257,6 +273,8 @@ class CalendarDayCell extends StatelessWidget {
                     color: context.colors.greenPrimary,
                     fontSize: 10,
                   ),
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
                 ),
             ],
           ],

@@ -18,6 +18,11 @@ extension TrackingX on TrackingType {
   bool get isSaving => this == TrackingType.saving;
 }
 
+extension CurrencyX on CurrencyType {
+  bool get isUsd => this == CurrencyType.usd;
+  bool get isKhr => this == CurrencyType.khr;
+}
+
 extension GradientDirectionX on GradientDirection {
   Alignment get begin {
     switch (this) {

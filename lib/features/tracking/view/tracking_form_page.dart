@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:monee/core/bloc/currency/currency_bloc.dart';
 import 'package:monee/core/bloc/lang/language_bloc.dart';
 import 'package:monee/core/bloc/tracking/tracking_bloc.dart';
+import 'package:monee/core/enums/enum.dart';
 import 'package:monee/core/extensions/extension.dart';
 import 'package:monee/core/models/category_model.dart';
 import 'package:monee/core/models/tracking_model.dart';
@@ -67,6 +69,7 @@ class _TrackingFormViewState extends State<TrackingFormView> {
   TextEditingController _descriptionController = TextEditingController();
   DateTime _selectedDate = DateTime.now();
   DateTime _selectedEndDate = DateTime.now();
+  CurrencyType? _currencyType;
 
   @override
   void initState() {
@@ -86,6 +89,7 @@ class _TrackingFormViewState extends State<TrackingFormView> {
         if (tracking.type.isSaving && tracking.endDate != null) {
           _selectedEndDate = DateTime.parse(tracking.endDate ?? tracking.date);
         }
+        _currencyType = tracking.currency;
       });
     } else {
       final nextDay = _selectedDate.add(const Duration(days: 1));
@@ -145,7 +149,8 @@ class _TrackingFormViewState extends State<TrackingFormView> {
       );
       return;
     }
-
+    final currency =
+        _currencyType ?? context.read<CurrencyBloc>().state.selectCurrency;
     final tracking = TrackingModel(
       id: widget.tracking?.id ?? const Uuid().v4(),
       type: widget.selectedCategory.type,
@@ -157,6 +162,7 @@ class _TrackingFormViewState extends State<TrackingFormView> {
       endDate: widget.selectedCategory.type.isSaving
           ? _selectedEndDate.toIso8601String().split('T').first
           : null,
+      currency: currency,
     );
 
     if (widget.tracking != null) {
@@ -189,8 +195,9 @@ class _TrackingFormViewState extends State<TrackingFormView> {
         }
       }
     }
-    if (widget.selectedCategory.type.isSaving) {
-      AppRouter.navigationBottomBarShell.goBranch(2);
+    if (widget.selectedCategory.type.isSaving && mounted) {
+      context.goNamed(Pages.app.name);
+      await context.pushNamed(Pages.saving.name);
       return;
     }
     AppRouter.navigationBottomBarShell.goBranch(1);
@@ -253,15 +260,20 @@ class _TrackingFormViewState extends State<TrackingFormView> {
                           hintText: l10n.enter_tracking_title,
                         ),
                       ),
-                      TextField(
-                        controller: _amountController,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: widget.selectedCategory.type.isSaving
-                              ? l10n.goal_saving
-                              : l10n.amount,
-                          hintText: l10n.enter_amount,
-                        ),
+                      BlocBuilder<CurrencyBloc, CurrencyState>(
+                        builder: (context, currencyState) {
+                          final currrencyType =
+                              _currencyType ?? currencyState.selectCurrency;
+                          return TextField(
+                            controller: _amountController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText:
+                                  '${widget.selectedCategory.type.isSaving ? l10n.goal_saving : l10n.amount} (${currrencyType.isUsd ? l10n.usd : l10n.khr})',
+                              hintText: l10n.enter_amount,
+                            ),
+                          );
+                        },
                       ),
                       InkWell(
                         onTap: _selectDate,

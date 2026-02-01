@@ -4,6 +4,7 @@ import 'package:monee/core/extensions/extension.dart';
 import 'package:monee/core/models/tracking_model.dart';
 import 'package:monee/core/routes/routes.dart';
 import 'package:monee/core/theme/spacing.dart';
+import 'package:monee/core/utils/util.dart';
 import 'package:monee/widgets/src/custom_image.dart';
 
 class TrackingItem extends StatelessWidget {
@@ -32,7 +33,10 @@ class TrackingItem extends StatelessWidget {
             ? '-'
             : tracking.type.isIncome
             ? '+'
-            : ''}\$${tracking.amount}',
+            : ''}${CurrencyUtil.formatCurrency(
+          tracking.amount,
+          currencyType: tracking.currency,
+        )}',
         style: context.textTheme.bodyMedium?.copyWith(
           color: tracking.type.isExpense
               ? context.colors.redPrimary

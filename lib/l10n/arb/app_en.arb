@@ -36,7 +36,7 @@
   "@good_evening": {},
   "good_night": "Good night",
   "@good_night": {},
-  "view_all_record": "view all your record",
+  "view_all_record": "View all your record",
   "@view_all_record": {},
   "add_tracking": "Add Tracking",
   "@add_tracking": {},
@@ -259,5 +259,13 @@
         "description": "saving name"
       }
     }
-  }
+  },
+  "currency": "Currency",
+  "@currency": {},
+  "press_here_to_change_currency": "Press here to change currency",
+  "@press_here_to_change_currency": {},
+  "usd": "USD (Dollar)",
+  "@usd": {},
+  "khr": "KHR (Reil)",
+  "@khr": {}
 }

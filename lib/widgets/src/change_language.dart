@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:monee/core/bloc/lang/language_bloc.dart';
+import 'package:monee/core/extensions/extension.dart';
 import 'package:monee/l10n/l10n.dart';
 
 class ChangeLanguage extends StatefulWidget {
@@ -58,6 +59,9 @@ class _ChangeLanguageState extends State<ChangeLanguage> {
       ),
       actions: [
         TextButton(
+          style: FilledButton.styleFrom(
+            foregroundColor: context.colors.redPrimary,
+          ),
           onPressed: () => Navigator.pop(context),
           child: Text(l10n.cancel),
         ),

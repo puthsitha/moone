@@ -3,6 +3,8 @@ class ImagePaths {
   static const String onboarding2 = 'assets/images/onboarding_2.png';
   static const String monee = 'assets/images/monee.png';
   static const String logo = 'assets/images/logo.png';
+  static const String usd = 'assets/images/dollar.png';
+  static const String khr = 'assets/images/riel.png';
 }
 
 class GifPaths {

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:monee/core/bloc/lang/language_bloc.dart';
+import 'package:monee/core/enums/enum.dart';
 import 'package:monee/core/extensions/extension.dart';
 import 'package:monee/core/models/category_model.dart';
 import 'package:monee/core/theme/spacing.dart';
+import 'package:monee/core/utils/util.dart';
 import 'package:monee/l10n/l10n.dart';
 import 'package:monee/widgets/widgets.dart';
 
@@ -14,6 +16,7 @@ class BudgetItem extends StatelessWidget {
     required this.remaining,
     required this.remainingPercentage,
     required this.totalExpense,
+    required this.currencyType,
     super.key,
     this.onPress,
   });
@@ -24,6 +27,7 @@ class BudgetItem extends StatelessWidget {
   final num monthlyBudget;
   final num totalExpense;
   final CategoryModel category;
+  final CurrencyType currencyType;
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +106,10 @@ class BudgetItem extends StatelessWidget {
                           ),
                           Text(
                             monthlyBudget > 0
-                                ? '\$${monthlyBudget.toStringAsFixed(2)}'
+                                ? CurrencyUtil.formatCurrency(
+                                    monthlyBudget,
+                                    currencyType: currencyType,
+                                  )
                                 : '--',
                             style: context.textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.w600,

@@ -14,6 +14,7 @@ class TrackingModel {
     this.date = '',
     this.endDate,
     this.category = const CategoryModel(),
+    this.currency = CurrencyType.usd,
   });
 
   factory TrackingModel.fromMap(Map<String, dynamic> map) {
@@ -27,6 +28,7 @@ class TrackingModel {
       date: map['date'] as String,
       endDate: map['endDate'] != null ? map['endDate'] as String : null,
       category: CategoryModel.fromMap(map['category'] as Map<String, dynamic>),
+      currency: CurrencyType.fromMap(map['currency'] as String),
     );
   }
 
@@ -43,6 +45,7 @@ class TrackingModel {
   final String date;
   final String? endDate;
   final CategoryModel category;
+  final CurrencyType currency;
 
   TrackingModel copyWith({
     String? id,
@@ -54,6 +57,7 @@ class TrackingModel {
     String? date,
     String? endDate,
     CategoryModel? category,
+    CurrencyType? currency,
   }) {
     return TrackingModel(
       id: id ?? this.id,
@@ -65,6 +69,7 @@ class TrackingModel {
       date: date ?? this.date,
       endDate: endDate ?? this.endDate,
       category: category ?? this.category,
+      currency: currency ?? this.currency,
     );
   }
 
@@ -79,6 +84,7 @@ class TrackingModel {
       'date': date,
       'endDate': endDate,
       'category': category.toMap(),
+      'currency': currency.name,
     };
   }
 

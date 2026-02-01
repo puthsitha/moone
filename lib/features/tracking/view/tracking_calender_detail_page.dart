@@ -6,6 +6,7 @@ import 'package:monee/core/bloc/tracking/tracking_bloc.dart';
 import 'package:monee/core/enums/enum.dart';
 import 'package:monee/core/extensions/extension.dart';
 import 'package:monee/core/routes/routes.dart';
+import 'package:monee/core/utils/util.dart';
 import 'package:monee/l10n/l10n.dart';
 import 'package:monee/widgets/widgets.dart';
 
@@ -59,10 +60,22 @@ class TrackingCalenderDetailView extends StatelessWidget {
           const initValue = 0.0;
           final totalExpense = trackings
               .where((t) => t.type == TrackingType.expense)
-              .fold(initValue, (sum, t) => sum + t.amount);
+              .fold(initValue, (sum, tracking) {
+                final currencyAmount = CurrencyUtil.currencyAmount(
+                  context,
+                  tracking: tracking,
+                );
+                return sum + currencyAmount;
+              });
           final totalIncome = trackings
               .where((t) => t.type == TrackingType.income)
-              .fold(initValue, (sum, t) => sum + t.amount);
+              .fold(initValue, (sum, tracking) {
+                final currencyAmount = CurrencyUtil.currencyAmount(
+                  context,
+                  tracking: tracking,
+                );
+                return sum + currencyAmount;
+              });
 
           return Column(
             children: [
@@ -80,7 +93,10 @@ class TrackingCalenderDetailView extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '\$${totalExpense.toStringAsFixed(2)}',
+                          CurrencyUtil.caculateFormatCurrency(
+                            context,
+                            totalExpense,
+                          ),
                           style: context.textTheme.headlineMedium?.copyWith(
                             color: context.colors.redPrimary,
                             fontWeight: FontWeight.bold,
@@ -97,7 +113,10 @@ class TrackingCalenderDetailView extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          '\$${totalIncome.toStringAsFixed(2)}',
+                          CurrencyUtil.caculateFormatCurrency(
+                            context,
+                            totalIncome,
+                          ),
                           style: context.textTheme.headlineMedium?.copyWith(
                             color: context.colors.greenPrimary,
                             fontWeight: FontWeight.bold,

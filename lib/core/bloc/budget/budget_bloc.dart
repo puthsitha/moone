@@ -74,7 +74,7 @@ class BudgetBloc extends HydratedBloc<BudgetEvent, BudgetState> {
   ) {
     final updatedBudgets = state.budgets.map((b) {
       if (b.category.id == event.categoryId) {
-        return b.copyWith(budget: event.budget);
+        return b.copyWith(budget: event.budget, currency: event.currencyType);
       }
       return b;
     }).toList();

@@ -10,6 +10,7 @@ import 'package:monee/core/extensions/extension.dart';
 import 'package:monee/core/models/tracking_model.dart';
 import 'package:monee/core/routes/routes.dart';
 import 'package:monee/core/theme/spacing.dart';
+import 'package:monee/core/utils/util.dart';
 import 'package:monee/l10n/l10n.dart';
 import 'package:monee/widgets/widgets.dart';
 
@@ -148,7 +149,7 @@ class _TrackingDetailViewState extends State<TrackingDetailView> {
                         ? '-'
                         : trackingData.type.isIncome
                         ? '+'
-                        : ''} \$${trackingData.amount}',
+                        : ''} ${CurrencyUtil.formatCurrency(trackingData.amount, currencyType: trackingData.currency)}',
                     style: context.textTheme.titleMedium?.copyWith(
                       color: trackingData.type.isExpense
                           ? context.colors.redPrimary

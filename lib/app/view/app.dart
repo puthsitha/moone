@@ -4,6 +4,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:intl/intl.dart';
 import 'package:monee/core/bloc/budget/budget_bloc.dart';
 import 'package:monee/core/bloc/category/category_bloc.dart';
+import 'package:monee/core/bloc/currency/currency_bloc.dart';
 import 'package:monee/core/bloc/lang/language_bloc.dart';
 import 'package:monee/core/bloc/theme/theme_bloc.dart';
 import 'package:monee/core/bloc/tracking/tracking_bloc.dart';
@@ -12,6 +13,7 @@ import 'package:monee/core/routes/src/app_router.dart';
 import 'package:monee/core/theme/src/dark_theme.dart';
 import 'package:monee/core/theme/src/light_theme.dart';
 import 'package:monee/l10n/l10n.dart';
+import 'package:monee/services/notification_services.dart';
 
 class App extends StatefulWidget {
   const App({super.key});
@@ -23,6 +25,9 @@ class App extends StatefulWidget {
 class _AppState extends State<App> {
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await NotificationService().init();
+    });
     _initSplashScreen();
     super.initState();
   }
@@ -39,6 +44,9 @@ class _AppState extends State<App> {
       providers: [
         BlocProvider(
           create: (context) => LanguageBloc(),
+        ),
+        BlocProvider(
+          create: (context) => CurrencyBloc(),
         ),
         BlocProvider(
           create: (context) => ThemeBloc(),
